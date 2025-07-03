@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Earth - Real-Time Daylight + Location</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: black;
+        font-family: 'Segoe UI', sans-serif;
+      }
+      canvas {
+        display: block;
+      }
+      nav {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 2rem;
+        z-index: 20;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      nav h1 {
+        font-size: 1.2rem;
+        margin: 0;
+        flex: 1 1 auto;
+      }
+      nav .developer {
+        font-size: 1rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.8rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        color: white;
+        font-size: 0.9rem;
+        z-index: 20;
+      }
+      #info {
+        position: absolute;
+        top: 70px;
+        left: 20px;
+        color: white;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 10px 15px;
+        border-radius: 8px;
+        z-index: 10;
+        font-size: 0.95rem;
+      }
+      .signature {
+        position: absolute;
+        bottom: 70px;
+        right: 50px;
+        font-family: 'Great Vibes', cursive;
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.15);
+        transform: rotate(-10deg);
+        z-index: 19;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1>🌍 3D Earth - Real-Time View</h1>
+    </nav>
+    <div id="info">Real Time Day/Night & Your Location</div>
+    <div id="container"></div>
+    <footer>
+      &copy; 2025 Er Raj Aryan. All rights reserved.
+    </footer>
+    <div class="signature">Er Raj Aryan</div>
+
+    <!-- Use Globe.gl for a simpler 3D globe experience -->
+    <script src="https://unpkg.com/globe.gl"></script>
+    <script>
+      const world = Globe()(document.getElementById('container'))
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+        .showAtmosphere(true)
+        .atmosphereColor('#3a228a')
+        .atmosphereAltitude(0.25)
+        .backgroundColor('#000000')
+        .pointOfView({ lat: 20, lng: 80, altitude: 2 }, 1000);
+
+      function addMarker(lat, lng) {
+        world.pointsData([
+          { lat, lng, size: 0.5, color: 'red' }
+        ])
+        .pointAltitude('size')
+        .pointColor('color');
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            addMarker(latitude, longitude);
+          },
+          (err) => {
+            console.warn("Geolocation error:", err);
+            addMarker(28.6139, 77.2090);
+          }
+        );
+      } else {
+        addMarker(28.6139, 77.2090);
+      }
+    </script>
+  </body>
+</html>
